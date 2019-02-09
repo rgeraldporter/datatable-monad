@@ -45,6 +45,26 @@ const filterColumns = (x: DataTableConstructor, f: Function) => {
     );
 };
 
+const getThString = (a: string): string => `<th>${a}</th>`;
+const getTdString = (a: DataPoint): string => `<td>${a}</td>`;
+const getTrString = (a: DataTableRow): string =>
+    `            <tr>${a.map(getTdString).join('')}</tr>`;
+
+const generateHtmlTable = (x: DataTableConstructor) =>
+    `
+    <table>
+        <thead>
+            <tr>${getDataHeader(x)
+                .map(getThString)
+                .join('')}</tr>
+        </thead>
+        <tbody>
+${getDataRows(x)
+    .map(getTrString)
+    .join('\n')}
+        </tbody>
+    </table>`;
+
 const DataTable = (x: DataTableConstructor): DataTableMonad => ({
     map: (f: Function): DataTableMonad => DataTable(f(x)),
     chain: <T>(f: Function): T => f(x),
@@ -65,8 +85,10 @@ const DataTable = (x: DataTableConstructor): DataTableMonad => ({
                 .concat(x.filter((y: DataTableItem, i: number) => i !== 0))
         ),
     header: (): DataTableHeader => x[0],
-    column: (k: number | string): DataPoint[] => getColumn(k, x),
-    col: (k: number | string): DataPoint[] => getColumn(k, x),
+    // @ts-ignore
+    column: (k: number | string): DataTableColumn => getColumn(k, x),
+    // @ts-ignore
+    col: (k: number | string): DataTableColumn => getColumn(k, x),
     columns: (kn: Array<number | string>) =>
         kn.map((a: string | number) => getColumn(a, x)),
     cols: (kn: Array<number | string>) =>
@@ -78,8 +100,17 @@ const DataTable = (x: DataTableConstructor): DataTableMonad => ({
         DataTable(getEmptyTable(x).concat(getDataRows(x).filter(f))),
     // @ts-ignore
     filterCols: (f: Function): DataTableMonad => DataTable(filterColumns(x, f)),
-    csv: () => {},
-    json: () => {}
+    obj: <T extends object>(): T[] =>
+        getDataRows(x).map((row: DataTableRow) =>
+            getDataHeader(x).reduce(
+                (acc: T, a: string, i: number) => ({
+                    ...acc,
+                    ...{ [a || i]: row[i] }
+                }),
+                {} as T
+            )
+        ),
+    html: (): string => generateHtmlTable(x)
 });
 
 const dtTypeError = <T>(x: T): DataTableMonad => {

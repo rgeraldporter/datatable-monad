@@ -247,4 +247,48 @@ describe('The DataTable monad', () => {
 
         expect(dt.filterCols(filterFn).join()).toEqual(a2);
     });
+
+    it('should be able to convert to an array of objects', () => {
+        const a: DataTableConstructor = [
+            ['Col1', 'Column 2', 'Column 3'],
+            [1, 2, 3],
+            [2, 3, 4],
+            [4, 4, 4]
+        ];
+
+        const a2: object[] = [
+            { Col1: 1, 'Column 2': 2, 'Column 3': 3 },
+            { Col1: 2, 'Column 2': 3, 'Column 3': 4 },
+            { Col1: 4, 'Column 2': 4, 'Column 3': 4 }
+        ];
+
+        const dt = DataTable.of(a);
+
+        expect(dt.obj()).toEqual(a2);
+    });
+
+    it('should be able to convert to an HTML table', () => {
+        const a: DataTableConstructor = [
+            ['Col1', 'Column 2', 'Column 3'],
+            [1, 2, 3],
+            [2, 3, 4],
+            [4, 4, 4]
+        ];
+
+        const a2 = `
+    <table>
+        <thead>
+            <tr><th>Col1</th><th>Column 2</th><th>Column 3</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>1</td><td>2</td><td>3</td></tr>
+            <tr><td>2</td><td>3</td><td>4</td></tr>
+            <tr><td>4</td><td>4</td><td>4</td></tr>
+        </tbody>
+    </table>`;
+
+        const dt = DataTable.of(a);
+
+        expect(dt.html()).toEqual(a2);
+    });
 });

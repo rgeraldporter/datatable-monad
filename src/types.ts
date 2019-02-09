@@ -14,11 +14,7 @@ export type DataTableRow = DataPoint[];
 export type DataTableDataRows = DataTableRow[];
 
 export type DataTableConstructor = [DataTableHeader, ...DataTableDataRows];
-
-export interface DataTableColumn extends Array<DataPoint> {
-    0: string;
-    [n: number]: DataPoint;
-}
+export type DataTableColumn = [DataTableHeader, ...DataTableRow];
 
 export interface DataTableMonad extends Monad {
     append: Function;
@@ -33,8 +29,8 @@ export interface DataTableMonad extends Monad {
     head: Function;
     tail: Function;
     isEmpty: Function;
-    csv: Function;
-    json: Function;
+    obj: Function;
     filter: Function;
     filterCols: Function;
+    html: Function;
 }

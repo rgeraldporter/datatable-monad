@@ -1,6 +1,6 @@
 {
     "name": "datatable-monad",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Data tables in monad form. Immutible, functional.",
     "main": "build/src/index.js",
     "types": "build/src/index.d.ts",
